@@ -10,7 +10,7 @@ export const CommingSoon = ({ title}) => {
           </h1>
           <div className="flex flex-col items-center space-y-4 mt-24">
             <p className="text-gray-300 uppercase text-sm">
-              Notify me when it's ready
+              Notify me when it&apos;s ready
             </p>
             <div className="w-full flex items-center">
               <input
