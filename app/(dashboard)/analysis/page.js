@@ -236,6 +236,8 @@ const AnalysisPage = () => {
                     </FormItem>
                   )}
                 />
+              </div>
+              <div className="flex gap-2 pb-3">
                 <FormField
                   control={form.control}
                   name="crop_planned"
