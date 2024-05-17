@@ -86,4 +86,7 @@ body,
   body {
     @apply bg-background text-foreground;
   }
+  .form-input{
+    @apply border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent border-b-2
+  }
 }
