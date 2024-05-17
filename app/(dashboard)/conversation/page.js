@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { Empty } from "../_components/empty";
 import { Loader } from "../_components/loader";
 import { useRouter } from "next/navigation";
+import { Markdown } from "../_components/markdown";
 
 const formSchema = z.object({
   prompt: z.string().min(2, {
@@ -144,7 +145,8 @@ const ConversationPage = () => {
                       : "bg-muted"
                   )}
                 >
-                  <pre className="text-sm">{item.content.replace(/\n'\s*\+\s*'\n/g, "\n")}</pre>
+                  <Markdown content={item.content} />
+                  {/* <pre className="text-sm">{item.content.replace(/\n'\s*\+\s*'\n/g, "\n")}</pre> */}
                 </div>
               ))}
           </div>

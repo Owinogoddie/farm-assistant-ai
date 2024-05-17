@@ -6,6 +6,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "AgriAide",
   description: "AgriAide - Your Digital Farming Companion",
+  iconns:{
+    icon:"/logo.svg"
+  }
 };
 
 export default function RootLayout({ children }) {

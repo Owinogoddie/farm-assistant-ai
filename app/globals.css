@@ -6,8 +6,14 @@ body,
 :root {
   height: 100%;
 }
-.lucid-x{
+.lucid-x {
   color: white !important;
+}
+.mark-down {
+  border-radius: 15px;
+  background-color: #0202020e;
+  font-size: 14px;
+  height: auto;
 }
 @layer base {
   :root {
