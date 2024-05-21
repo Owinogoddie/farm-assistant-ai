@@ -11,7 +11,7 @@ export const LandingNavbar = () => {
         <div className="relative h-8 w-8 mr-4">
           <Image src="/logo.svg" alt="logo" fill />
         </div>
-        <h2 className={cn("text-2xl font-bold text-white")}>Farm <span className="text-capitalize text-emerald-700 font-extrabold">assistant</span></h2>
+        <h2 className={cn("text-2xl font-bold text-white")}>Shamba <span className="text-capitalize text-emerald-700 font-extrabold">assistant</span></h2>
       </Link>
       <div className="flex items-center gap-x-2">
         <Link href="/dashboard">

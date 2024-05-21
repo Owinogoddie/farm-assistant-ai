@@ -5,7 +5,6 @@ import { conversationPrompt } from "@/utils/conversation-prompt";
 
 
 export async function POST(req) {
-    console.log("HITTTTTTTTMAN")
   try {
     const body = await req.json();
     const { messages, input } = body;

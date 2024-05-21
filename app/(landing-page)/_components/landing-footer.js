@@ -11,12 +11,12 @@ export const LandingFooter = () => {
         <div className="relative h-8 w-8 mr-4">
           <Image src="/logo.svg" alt="logo" fill />
         </div>
-        <h2 className={cn("text-2xl font-bold text-white")}>Farm assistant</h2>
+        <h2 className={cn("text-2xl font-bold text-white")}>Shamba assistant</h2>
       </Link>
       <div className="flex items-center gap-x-2">
         <Link href="/dashboard">
           <Button variant="ghost" className="rounded-md text-white">
-            &copy; 2024 <span>All rights reserved</span>
+            &copy; 2024 - <span className="ml-2"> All rights reserved</span>
           </Button>
         </Link>
       </div>

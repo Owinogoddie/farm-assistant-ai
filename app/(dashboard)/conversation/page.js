@@ -24,6 +24,8 @@ import { Empty } from "../_components/empty";
 import { Loader } from "../_components/loader";
 import { useRouter } from "next/navigation";
 import { Markdown } from "../_components/markdown";
+import { SelectModal } from "./_components/select-modal";
+import { useDialogStore } from "@/hooks/useDialog";
 
 const formSchema = z.object({
   prompt: z.string().min(2, {
@@ -34,7 +36,11 @@ const ConversationPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
+  const { value, setValue } = useDialogStore();
 
+  useEffect(() => {
+    console.log("value from zustand", value);
+  }, [value, setValue]);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,13 +58,23 @@ const ConversationPage = () => {
       };
 
       const newMessages = [...history, userMessage];
-      const response = await axios.post("/api/conversation", {
-        messages: newMessages,
-        input: values.prompt,
-      });
+      let response;
+
+      if (value === "general") {
+        response = await axios.post("/api/conversation", {
+          messages: newMessages,
+          input: values.prompt,
+        });
+      } else {
+        response = await axios.post("/api/cropSpecificConv", {
+          messages: newMessages,
+          question: values.prompt,
+          crop: value,
+        });
+      }
+
       console.log(response.data);
       setHistory((prev) => [...response.data, ...prev]);
-
     } catch (error) {
       console.log("error generating", error.message);
       setLoading(false);
@@ -70,9 +86,11 @@ const ConversationPage = () => {
   const handleClick = () => {
     setHistory([]);
   };
- 
+
   return (
     <div>
+      <SelectModal />
+
       <Heading
         bgColor="bg-emerald-500/10"
         iconColor="text-emerald-500"
@@ -81,15 +99,44 @@ const ConversationPage = () => {
         title="Chat with a farm expert"
       />
       <div>
+       <div className="pb-6">
+       {value &&
+          value !==
+            "general" &&(
+              <h3 className="text-semibold text-center text-xl md:text-2xl">
+                Welcome Iam your expert in {value} farming 😎
+              </h3>
+            )}
+        {value &&
+          value ===
+            "general" &&(
+              <h3 className="text-semibold text-center text-xl md:text-2xl">
+                Welcome Iam your expert in all farming matters 😎
+              </h3>
+            )}
+       </div>
         <div>
+          {history && (
+            <Button
+              type="button"
+              onClick={handleClick}
+              siz="sm"
+              variant="secondary"
+              className="m-3"
+            >
+              clear history
+            </Button>
+          )}
           <Button
             type="button"
-            onClick={handleClick}
+            onClick={() => {
+              setValue("");
+            }}
             siz="sm"
-            variant="secondary"
+            variant="premium"
             className="m-3"
           >
-            clear history
+            Choose another crop
           </Button>
         </div>
         <Form {...form}>
@@ -102,7 +149,7 @@ const ConversationPage = () => {
               name="prompt"
               render={({ field }) => (
                 <FormItem className="col-span-12 lg:col-span-10">
-                  <FormLabel>Prompt</FormLabel>
+                  <FormLabel>Query</FormLabel>
                   <FormControl className="m-0 p-0">
                     <Input
                       className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent border-b-2"

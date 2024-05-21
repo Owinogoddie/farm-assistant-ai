@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { PromptTemplate } from "@langchain/core/prompts";
-import {
-  StringOutputParser,
-} from "@langchain/core/output_parsers";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 
 import {
   RunnableSequence,
@@ -12,7 +10,6 @@ import { getLLM } from "@/utils/getLLM";
 import { soilAnalysisTemplate2 } from "@/utils/templates";
 import { generateStandAloneQnChain } from "@/utils/gen-stand-alone-qn";
 import { vectorRetriever } from "@/utils/vectorRetriever";
-import { convertToStructuredJSON3 } from "@/utils/generate-json";
 
 export async function POST(req) {
   try {
@@ -25,18 +22,18 @@ export async function POST(req) {
       organic_matter,
       texture,
       crop_planned,
-      convHistory
+      convHistory,
     } = body;
 
     if (
-      (!ph_level ||
+      !ph_level ||
       !nitrogen ||
       !phosphorus ||
       !potassium ||
       !organic_matter ||
       !texture ||
       convHistory ||
-      !crop_planned)
+      !crop_planned
     ) {
       return new NextResponse("All fields are required");
     }
@@ -54,13 +51,16 @@ export async function POST(req) {
     const combineDocs = (docs) => {
       return docs.map((doc) => doc.pageContent).join("\n\n");
     };
-    
+
     // ANSWER TEMPLATE
     const answerTemplate = soilAnalysisTemplate2;
     const answerPrompt = PromptTemplate.fromTemplate(answerTemplate);
 
     const standaloneQnchain = await generateStandAloneQnChain();
-    const retriever = await vectorRetriever();
+    const tableName="documents" ;
+    const queryName="match_documents";
+
+    const retriever = await vectorRetriever(tableName,queryName);
     const retrieverChain = RunnableSequence.from([
       (prevResult) => prevResult.standalone_question,
       retriever,
@@ -82,8 +82,7 @@ export async function POST(req) {
       answerChain,
     ]);
 
-    const question =
-      `Generate a comprehensive recommendation  for pH Level: ${ph_level}, Nitrogen (N): ${nitrogen} ppm, Phosphorus (P): ${phosphorus} ppm, Potassium (K): ${potassium} ppm, Organic Matter: ${organic_matter}%, Soil Texture: ${texture}, Crop Planned: ${crop_planned}, mentioning the planned crop in the report, severally and producing the required format`;
+    const question = `Generate a comprehensive recommendation  for pH Level: ${ph_level}, Nitrogen (N): ${nitrogen} ppm, Phosphorus (P): ${phosphorus} ppm, Potassium (K): ${potassium} ppm, Organic Matter: ${organic_matter}%, Soil Texture: ${texture}, Crop Planned: ${crop_planned}, mentioning the planned crop in the report, severally and producing the required format`;
     const question2 =
       "Regenerate, mentioning the planned crop in the report, severally and producing the required format";
     // const standaloneqn = await standaloneQnchain.invoke({ question });
@@ -98,13 +97,13 @@ export async function POST(req) {
 
     // console.log("HISTORY", convHistory);
 
-    const jsonStructure = convertToStructuredJSON3(response);
+    // const jsonStructure = convertToStructuredJSON3(response);
     // const jsonResponse = JSON.parse(response);
     // console.log("MAIN_RESPONSE:", { response });
     // const res=await retriever.invoke(question)
     // console.log(JSON.stringify(jsonStructure, null, 2));
-    
-console.log({response})
+
+    console.log({ response });
     return NextResponse.json(response);
 
     // const res = response.lc_kwargs.content;

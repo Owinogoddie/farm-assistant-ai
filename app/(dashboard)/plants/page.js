@@ -5,7 +5,8 @@ const PlantDetectionPage = () => {
   return (
     <div>
         <CommingSoon
-        title="Plant Disease detection comming soon..."
+        title="Plant Disease detection comming soon... stay tuned 🥰🥰🥰"
+        
         />
     </div>
   )

@@ -10,7 +10,7 @@ export const LandingHero = () => {
   return (
     <div className="text-white font-bold py-36 text-center space-y-5">
       <div className="text-4x sm:text-5xl md:text-6xl lg:text-7xl space-y-5 font-extrabold">
-        <h1>Your expert for</h1>
+        <h1>Your expert in</h1>
         <div className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-lime-600">
           {/* Typewriter */}
           <TypewriterComponent
@@ -18,7 +18,7 @@ export const LandingHero = () => {
               strings: [
                 "Expert Consultations",
                 "Soil Intelligence Analysis",
-                "Crop Health Scanner",
+                "Crop Health Analysis",
                 "Animal Health Monitoring",
               ],
               autoStart: true,

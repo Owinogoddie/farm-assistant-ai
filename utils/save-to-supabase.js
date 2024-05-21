@@ -2,7 +2,7 @@ import { SupabaseVectorStore } from "@langchain/community/vectorstores/supabase"
 import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { TaskType } from "@google/generative-ai";
-export const saveToSupabase = async (docs) => {
+export const saveToSupabase = async (docs, table_name) => {
   const embeddings = new GoogleGenerativeAIEmbeddings({
     model: "embedding-001", // 768 dimensions
     taskType: TaskType.RETRIEVAL_DOCUMENT,
@@ -15,9 +15,9 @@ export const saveToSupabase = async (docs) => {
   try {
     await SupabaseVectorStore.fromDocuments(docs, embeddings, {
       client,
-      tableName: "documents",
+      tableName: table_name,
     });
-    console.log("WOOOOOHOOOO!!!!SUCCESSFULLY SAVED TO SUPABASE")
+    console.log("🤗😍🤑 WOOOOOHOOOO!!!!SUCCESSFULLY SAVED TO SUPABASE");
   } catch (error) {
     console.log("SAVE_TO_SUPABASE_ERROR", error.message);
     throw error;
