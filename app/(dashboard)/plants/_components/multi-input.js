@@ -58,7 +58,9 @@ export const MultimodalInput = ({ onResponse, onLoadingChange }) => {
       setImage(null);
     }
   };
-
+  const videoConstraints = {
+    facingMode: { exact: "environment" }
+  };
   return (
     <div className="flex flex-col gap-8 p-8 items-center">
       <h1 className="text-lg text-center border-b-4 text-slate-700 font-bold w-fit">
@@ -99,7 +101,7 @@ export const MultimodalInput = ({ onResponse, onLoadingChange }) => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             className="w-full h-auto rounded-lg"
-            facingMode="environment"
+            videoConstraints={videoConstraints} 
           />
           <div className="flex items-center gap-2">
           <button
