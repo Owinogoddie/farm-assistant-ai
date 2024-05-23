@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { LucideCamera } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useRef } from "react";
 import { useDropzone } from "react-dropzone";
@@ -79,12 +80,16 @@ export const MultimodalInput = ({ onResponse, onLoadingChange }) => {
             <input {...getInputProps()} />
             <p>Drag & drop an image here, or click to select</p>
           </div>
-          <button
-            onClick={() => setCameraActive(true)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg mt-4"
-          >
-            Take Picture
-          </button>
+         {
+            !cameraActive &&(
+                <div
+                onClick={() => setCameraActive(true)}
+                className="px-4 cursor-pointer flex gap-2 item-center justify-center py-2 bg-blue-500 text-white rounded-lg mt-4"
+              >
+                Take Picture <LucideCamera className="h-5 w-5"/>
+              </div>
+            )
+         }
         </div>
       )}
       {cameraActive && (
@@ -95,12 +100,20 @@ export const MultimodalInput = ({ onResponse, onLoadingChange }) => {
             screenshotFormat="image/jpeg"
             className="w-full h-auto rounded-lg"
           />
+          <div className="flex items-center gap-2">
           <button
             onClick={captureImage}
-            className="px-4 py-2 bg-green-500 text-white rounded-lg mt-4"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg mt-4"
           >
             Capture
           </button>
+          <button
+            onClick={()=>{setCameraActive(false)}}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg mt-4"
+          >
+            Cancel
+          </button>
+          </div>
         </div>
       )}
       {image && (

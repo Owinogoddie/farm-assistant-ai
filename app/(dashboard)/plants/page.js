@@ -5,7 +5,7 @@ import { Markdown } from "../_components/markdown";
 import { Empty } from "../_components/empty";
 import { Loader } from "../_components/loader";
 
-const page = () => {
+const Page = () => {
   const [response, setResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const handleResponse = (data) => {
@@ -41,4 +41,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
