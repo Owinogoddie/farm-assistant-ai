@@ -99,6 +99,7 @@ export const MultimodalInput = ({ onResponse, onLoadingChange }) => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             className="w-full h-auto rounded-lg"
+            facingMode="environment"
           />
           <div className="flex items-center gap-2">
           <button
