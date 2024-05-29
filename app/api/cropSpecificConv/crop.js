@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { PromptTemplate } from "@langchain/core/prompts";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 import {
   RunnableSequence,
   RunnablePassthrough,
 } from "@langchain/core/runnables";
-import { getLLM } from "@/utils/getLLM";
-import { cropSpecificPromptTemplate } from "@/utils/templates";
+// import { getLLM } from "@/utils/getLLM";
+import {
+  cropSpecificPromptTemplate,
+  graderPromptTemplate,
+  temp3,
+} from "@/utils/templates";
 import { generateStandAloneQnChain } from "@/utils/gen-stand-alone-qn";
 import { vectorRetriever } from "@/utils/vectorRetriever";
 
@@ -28,26 +33,34 @@ export async function POST(req) {
       return new NextResponse("No crop chosen");
     }
 
-    const llm = getLLM();
+    // const llm = getLLM();
+    const gemini = new ChatGoogleGenerativeAI({
+      apiKey: process.env.GOOGLE_API_KEY,
+      model: "gemini-pro",
+      maxOutputTokens: 2048,
+    });
 
     const combineDocs = (docs) => {
       return docs.map((doc) => doc.pageContent).join("\n\n");
     };
 
     // ANSWER TEMPLATE
-    const answerTemplate = cropSpecificPromptTemplate;
+    const answerTemplate = temp3;
     const answerPrompt = PromptTemplate.fromTemplate(answerTemplate);
+    const graderPrompt = PromptTemplate.fromTemplate(graderPromptTemplate);
 
     const standaloneQnchain = await generateStandAloneQnChain();
     const tableName = "coffee_documents";
     const queryName = "match_coffee_documents";
     const retriever = await vectorRetriever(tableName, queryName);
+    // console.log("COFFEE DOCUMENTS RETRIEBER",retriever)
     const retrieverChain = RunnableSequence.from([
       (prevResult) => prevResult.standalone_question,
       retriever,
       combineDocs,
     ]);
-    const answerChain = answerPrompt.pipe(llm).pipe(new StringOutputParser());
+    const graderChain = graderPrompt.pipe(gemini).pipe(new StringOutputParser());
+    const answerChain = answerPrompt.pipe(gemini).pipe(new StringOutputParser());
 
     const chain = RunnableSequence.from([
       {
@@ -60,26 +73,29 @@ export async function POST(req) {
         convHistory: ({ original_input }) => original_input.conv_history,
         cropName: ({ original_input }) => original_input.cropName,
       },
+      async (inputs) => {
+        const { documents, question, convHistory, cropName } = inputs;
+        const graderResponse = await graderChain.invoke({
+          question,
+          documents,
+        });
+        console.log(graderResponse)
+        if (graderResponse.trim().toLowerCase() === "no") {
+          return {
+            shouldContinue: false,
+            message: "Hmmm. please 1. Try rephrasing your question to be more specific or 2. Provide additional details about your situation. "
+          };
+        } else {
+          return { documents, question, convHistory, cropName };
+        }
+      },
       answerChain,
     ]);
-
     const response = await chain.invoke({
       question,
       conv_history: [],
       cropName: crop,
     });
-    // convHistory.push(question);
-    // convHistory.push(response);
-
-    // console.log("HISTORY", convHistory);
-
-    // const jsonStructure = convertToStructuredJSON3(response);
-    // const jsonResponse = JSON.parse(response);
-    // console.log("MAIN_RESPONSE:", { response });
-    // const res=await retriever.invoke(question)
-    // console.log(JSON.stringify(jsonStructure, null, 2));
-
-    // console.log({ response });
 
     const resp = [
       {
@@ -91,9 +107,8 @@ export async function POST(req) {
         content: response,
       },
     ];
+    console.log(response);
     return NextResponse.json(resp);
-
-    // const res = response.lc_kwargs.content;
   } catch (error) {
     console.log("[CONVERSATION_ERROR]", error);
     return new NextResponse("Internal server error");
